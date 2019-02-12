@@ -8,3 +8,5 @@
 
 [swift进阶](./swiftAdvanced/note.md)
 
+[c++](./c++/note.md)
+
