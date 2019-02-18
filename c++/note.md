@@ -644,7 +644,7 @@ ug.Worker::m_age = 30;
 
 
 
-**静态成员(static)**
+#### **静态成员(static)**
 
 静态成员:被static修饰的成员变量\函数 
 
@@ -663,7 +663,242 @@ ug.Worker::m_age = 30;
 3. 内部不能访问非静态成员变量\函数，只能访问静态成员变量\函数 
 4. 非静态成员函数内部可以访问静态成员变量\函数  
 5. 构造函数、析构函数不能是静态 
-6.  当声明和实现分离时，实现部分不能带static  	
+6. 当声明和实现分离时，实现部分不能带static  	
+
+#### 单例模式
+
+```
+class Rocket {
+    int name;
+private:
+    Rocket() {   
+    }
+    static Rocket *ms_rocket;
+public:
+    static Rocket *shared() {
+    //未考虑的线程安全问题
+        if (ms_rocket == NULL) {
+            ms_rocket =new Rocket();
+        }
+        return ms_rocket;
+    }
+};
+Rocket* Rocket::ms_rocket = NULL;  全局变量声明
+```
+
+Delete 表示，这块内存被回收，可以被别人使用，并不表示这个内存会清零，被抺掉
+
+野指针表示指向被回收的内存
+
+
+
+
+
+
+
+
+
+
+
+#### 深拷贝
+
+```
+class Car {
+    int m_price;
+    char *m_name;
+     //深拷贝m_name
+    void copyName(const char *name) {
+        if (name == NULL) return;
+        this->m_name = new char[strlen(name) + 1]{};
+        strcpy(this->m_name,name)
+    }
+public:
+	Car(int price = 0,const char *name = NULL):m_price(price) {
+        copyName(name);
+	}
+	Car(const Car &car) {
+        this->m_price = car.m_price;
+        copyName(car.m_name);
+	}
+	~Car() {
+        if (this->m_name != NULL) {
+            delete[] this->m_name;
+        }
+	}
+}
+```
+
+对象参数和返回值  
+
+◼ 使用对象类型作为函数的参数或者返回值，可能会产生一些不必要的中间对象
+
+```
+class Car {
+    int m_price;
+public:
+	Car(){}
+	Car(int price):m_price(price){}
+	Car(const Car &car):m_price(car.m_price) {}
+};
+void test1(Car car){
+}
+Car test2() {
+    Car car(20); // Car(int price)
+    return car;  //外面使用时会调用拷贝构造函数，确实返回的对象在堆空间
+}
+Car car1(10);//Car(int price)
+test1(car1); //Car(const Car &car);
+Car car2 = test2();//Car(const Car &car);
+Car car3(30);//Car(int price)
+car3 = test2();//Car(const Car &car);
+```
+
+#### 匿名对象
+
+匿名对象：没有变量名、没有被指针指向的对象，用完后马上调用析构
+
+使用匿名对象直接调用构造函数，不再调用拷贝构造函数
+
+```
+void test1(Car car){
+}
+Car test2() {
+    return Car(20);
+}
+test1(Car(40));//Car(int price)
+Car car3(50);
+car3 = test2();//Car(int price)
+```
+
+隐匿构造
+
+C++中存在隐式构造的现象:某些情况下，会隐式调用**单参数**的构造函数
+
+```
+void test1(Car car){ //传10
+}
+Car test2() {
+    return 10;
+}
+Car car = 10;
+```
+
+
+
+
+
+可以通过关键字**explicit**禁止掉隐式构造
+
+```
+explicit Car(int price):m_price(price) {}
+```
+
+
+
+#### 编译器自动生成的构造函数
+
+◼ C++的编译器在**某些特定**的情况下，会给类自动生成无参的构造函数，比如
+
+成员变量在声明的同时进行了**初始化**
+有定义虚函数，需要设置虚表
+虚继承了其他类
+包含了**对象类型的成员**，且这个成员有构造函数(编译器生成或自定义)   指针类型成员不需要
+父类有构造函数(编译器生成或自定义)
+
+对象创建后，需要做一些额外操作时(比如内存操作、函数调用)，编译器一般都会为其自动生成无参的构造函数 
+
+
+
+#### **友元**
+
+◼ 友元包括友元函数和友元类
+
+```
+friend Point add(const Point &,const Point &)//友元函数
+friend class Math;//友元类
+```
+
+◼ 如果将函数A(非成员函数)声明为类C的友元函数，那么函数A就能直接访问类C对象的所有成员
+◼ 如果将类A声明为类C的友元类，那么类A的所有成员函数都能直接访问类C对象的所有成员
+◼ 友元破坏了面向对象的封装性，但在某些频繁访问成员变量的地方可以提高性能
+
+#### **内部类**
+
+◼ 如果将类A定义在类C的内部，那么类A就是一个内部类(嵌套类)
+◼ 内部类的特点
+支持public、protected、private权限
+成员函数可以直接访问其外部类对象的所有成员(反过来则不行)
+成员函数可以直接不带类名、对象名访问其外部类的static成员
+不会影响外部类的内存布局
+可以在外部类内部声明，在外部类外面进行定义
+
+```cla 
+声明和实现分离
+class Point{
+    class Math{
+        void test();
+    }
+};
+void Point::Math::test() {
+}
+-------
+class Point {
+    class Math;
+};
+class Point::Math{
+    void test(){}
+};
+-------
+class Point{
+    class Math;
+};
+class Point::Math{
+    void test();
+}
+void Point::Math::test() {}
+```
+
+#### **局部类**
+
+◼ 在一个函数内部定义的类，称为局部类
+◼ 局部类的特点
+作用域仅限于所在的函数内部
+其所有的成员必须定义在类内部，不允许定义**static**成员变量
+成员函数不能直接访问函数的局部变量(static变量除外)
+
+内部类与局部类的权限/作用域与普通类不同
+
+
+
+### 其他语法
+
+#### 运算符重载 **(operator overload)**
+
+全局函数、成员函数都支持运算符重载
+
+```
+全局函数
+Point operator+(const Point &p1,const Point &p2){
+    return Point(p1.m_x + p2.m_x,p1.m_y + p2.m_y);
+}
+class Point {
+	成员函数
+    Point operator+(const Point &point){
+    	return Point(this->m_x + point.m_x,this->m_y + point.m_y);
+	}
+};
+
+```
+
+
+
+
+
+
+
+
+
+
 
 ###栈桢
 
