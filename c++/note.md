@@ -701,9 +701,11 @@ public:
 class Rocket {
     int name;
 private:
-    Rocket() {   
-    }
+    Rocket() { }
     static Rocket *ms_rocket;
+    //禁止拷贝构造和赋值操作
+    Rocket(const Rocket&)() {};
+    Rocket &operator=(const Rocket &rocket){};
 public:
     static Rocket *shared() {
     //未考虑的线程安全问题
@@ -928,7 +930,7 @@ void Point::Math::test() {}
 全局函数、成员函数都支持运算符重载
 
 ```
-全局函数
+全局函数--1.使用const，const与非const都可以调用这个函数 2.使用&不会调用拷贝构造函数
 Point operator+(const Point &p1,const Point &p2){
     return Point(p1.m_x + p2.m_x,p1.m_y + p2.m_y);
 }
@@ -937,16 +939,44 @@ class Point {
     Point operator+(const Point &point){//const
     	return Point(this->m_x + point.m_x,this->m_y + point.m_y);
 	}
+	//直接返回对象会调用拷贝构造函数，所以加引用，而且加引用后是安全的，因为this仍然存在
+	Point &operator+=(const Point &point){
+		this->m_x += point.m_x;
+		this->m_y += point.m_y;
+    	return *this;
+	}
+	//第一个const使用结果不能被赋值,即-p不能被赋值，没有意义，第二个const表明这是一个const函数，const成员可以调用`-(-p)`
+	const Point operator-() const {
+		return Point(-this->m_x,-this->m_y);
+	}
 };
 ```
 
 
 
+#### 运算符重载
+
+注意点：
+
+◼ 有些运算符不可以被重载，比如 
+
+```
+1. 对象成员访问运算符:. 
+2. 域运算符:::
+3.  三目运算符:?:
+4. sizeof 
+```
+
+◼ 有些运算符只能重载为成员函数，比如
+
+```
+1.赋值运算符:=
+2.下标运算符:[ ]
+3.函数运算符:( )
+4.指针访问成员:->
+```
 
 
-
-
-####运算符重载
 
 ```
 //前++
@@ -958,26 +988,131 @@ void operator++() {
 void operator++(int) { //int是语法问题
 }
 ```
+```
+b = ++a + 8;  
+mov eax,dword ptr [a]    //eax = a
+inc eax    				 // eax += 1
+mov dword ptr [a],eax    // a = eax
+mov eax,dword ptr [a]    // eax = a
+add eax,8				 // eax +=  8
+mov dword ptr [b],eax    // b = eax
 
+b = a++ + 8;
+mov eax,dword ptr [a]    // eax = a
+add eax,8				 // eax += 8
+mov dword ptr [b],eax 	 // b = eax
+mov eax,dword ptr [a]    // eax = a
+inc eax					 // eax += 1
+mov dwrod ptr [a],eax	 // a = eax
+
+++a 会直接让a的值+1，并且返回最新的a进行运算
+a++ 会返回a以前的值进行运算，运算完毕之后才会让a的值+1
+
+```
+
+```
+const Point operator++(int) {  //const 返回的值不能改
+	Point Point(this->m_x,this->m_y);
+	this->m_x++;
+	this->m_y++;
+	return point;
+}
+```
+
+```
+全局函数 重载<<函数
+ostream &operator<<(ostream &cout, const Point &point) {
+    return cout<<"("<<point.m_x<<","<<point.m_y<<")";
+}
+```
 
 
 `a++` 与`++a`
 
-```
 
 ```
+String str1 = "123";
+cout<<str1<<endl;   //123
+str1 = "222";
+cout<<str1<<endl; 	//\300[\377\256
+//造成两个问题
+1. str1 = "222";会产生一个临时对象，释放时会调用析构函数，造成str1指向错误的字符串
+2. str1 原来指向的“123”无法释放
+
+//解决方式
+String &String::operator=(const char * cstring){
+    if (this->m_cstring) {
+        delete [] this->m_cstring;
+        this->m_cstring = NULL; //需要指NULL
+    }
+    if (cstring) {
+        this->m_cstring = new char[strlen(cstring) + 1];
+        strcpy(this->m_cstring, cstring);
+    }
+    return *this;
+}
+
+```
+
+
+
+#### 仿函数
+
+```
+class Sum {
+    public:
+    int operator()(int a,int b ){
+        return a + b;
+    }
+}
+```
+
+
+
+#### 模板(template)
+
+◼ 泛型，是一种将类型参数化以达到代码复用的技术，C++中使用模板来实现泛型 ，帮你生成不同的函数
+
+◼ 模板的使用格式如下  								
+
+template <typename\class T> 
+
+typename和class是等价的  								
+
+◼ 模板没有被使用时，是不会被实例化出来的，不会生成函数
+
+◼ 模板的声明和实现如果分离到.h和.cpp中，会导致链接错误 
+
+◼ 一般将模板的声明和实现**统一放到一个.hpp**文件中  	
+
+单独编译template .cpp文件时，不会生成函数实现
+
+​![](11.png)
+
+![](12.png)
+
+多参数模板
+
+```
+template <class T1,class T2> 
+void display(const T1 &v1,const T2 &v2) {
+    cout << v1 <<endl;
+	cout << v2 <<endl;
+}
+display(20,1.7)
+```
 
 
 
 
 
-
+​						 				
 
 ###栈桢
 
 1. 保护寄存器的值，push pop
 
-
+const可以调用static
 
 [感谢MJ编程内功必备之30小时快速精通C++和外挂实战](https://ke.qq.com/course/336509)
 
@@ -990,3 +1125,7 @@ void operator++(int) { //int是语法问题
 
 
 oc 多态 与swift不同
+
+```
+
+```
