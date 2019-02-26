@@ -967,6 +967,182 @@ String &String::operator=(const char * cstring){
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+#### 类模板
+
+
+
+#### 类型转换 c++风格
+
+1. Static_cast 
+
+   1. 对比dynamic_cast ,缺乏运行时检测
+   2. 不能交叉转换，不再继承体系不能转换
+   3. 常用于基本数据类型转换，及非const 转成const
+   4. 使用范围比较广，和不写类似
+
+2. const_cast
+
+   ```
+   const Person *p1 = new Person();
+   Person *p2 = const_cast<Person *>(p1);
+   p2->m_age = 20;
+   
+   Person *p2 = (Person *)p1; //c语言风格
+   ```
+
+3. dynamic_cast 用于多态类型检测,赋值不安全时，赋值NULL空指针
+
+   ```
+   class Student: Person {}; //继承
+   Person *p1 = new Student();
+   Student *stu1 = dynamic_cast<Student*> p1;
+   
+   c语言风格会直接赋值，没有那么安全
+   ```
+
+4. reinterpret_cast
+
+   1. 属于比较底层的强制转换，没有任何类型检查和格式转换，仅仅简单的二进制数据拷贝
+
+   2. 可以交叉转换
+
+   3. 可以将指针和整数互相转换
+
+      ```
+      int i = 10;
+      double d = i;//不是简单的二进制拷贝，int与浮点类型存储方式不同
+      
+      int i = 10;
+      double d = reinterpret_cast<double&> i;  //要加&语法糖
+      d的结果不是10， 
+      
+      int *p = reinterpret_cast<int *>(100);
+      int i = reinterpret_cast<int>(p);
+      ```
+
+      
+
+
+
+C++新特性
+
+#### c++11
+
+1. atuo
+
+   1. 可以从初始化表达式中推断出变量的类型，大大简化编程工作
+
+   2. 属于编译器特性，不影响最终的机器码质量，不影响运行效率
+
+      ```
+      //int i = 10;
+      auto i = 10; 
+      auto p = new Person();
+      ```
+
+2. decltype 可以获取变量 `int a = 10; decltype(a) b = 20;`
+
+3. Nullptr 空指针，可以解决二义性问题
+
+   ```
+   void func(int *p){ cout<<"func(int *) - "<<endl; }
+   func(nullptr);
+   ```
+
+4. 快速遍历
+
+   ```
+   int array[] = { 1,2,3,4};
+   for (int item:array)  {
+       cout << item <<endl;
+   }
+   ```
+
+5. 更简洁的初始化方式
+
+   ```
+   int array[]{11,22,33};
+   ```
+
+6. lambda表达式
+
+   1. 有点类似js中的闭包，ios中block，本质就是函数
+
+   2. `[capture list](params list)mutable exceptionn-> return {function body}`
+
+      ```
+      int (*p)(int,int) = [](int a,int b) -> int {
+          return a + b;
+      };
+      cout<<p(10,20)<<endl;
+      
+      int a = 10;
+      int b = 20;
+      [a,b] {
+      	cout << a << endl;    
+      	cout << b << endl;    
+      }
+      //a,b最新的值
+      [&a,&b] {
+          cout  << a <<endl;
+          cout  << b <<endl;
+      }
+      [=]{  默认值捕获，&默认引用捕获
+      }
+      ```
+
+C++14
+
+1. 泛型lambda表达式
+
+2. ```
+   auto func = [](auto v1,auto v2) {return v1 + v2 };
+   cout << func(10,20.5)<<endl;
+   ```
+
+3. 对捕获变量初始化
+
+   ```
+   int a;
+   auto func = [a = 10]() {
+       cout << a << endl;
+   }
+   func();
+   //这里仍然未初始化
+   cout << a << endl;
+   ```
+
+4. If else作用域
+
+
+
+
+
+#### 错误
+
+1. 语法错误
+2. 逻辑错误
+3. 异常
+4. 其他错误
+
+#### 异常
+
+程序运行过程中发生的一种
+
+
+
 ###栈桢
 
 1. 保护寄存器的值，push pop
