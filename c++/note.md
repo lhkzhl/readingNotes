@@ -15,48 +15,45 @@
 
 ### 基本语法
 
-1. **函数重载(Overload)**
+#### 函数重载(Overload)**
 
-   1. 函数名相同
+1. 函数名相同
 
-   2. 参数个数不同、参数类型不同、参数顺序不同
+2. 参数个数不同、参数类型不同、参数顺序不同
 
-   3. 返回值类型与函数重载无关
+3. 返回值类型与函数重载无关
 
-   4. 调用函数时，实参的隐式类型转换可能会产生二义性
+4. 调用函数时，实参的隐式类型转换可能会产生二义性
 
-   5. **本质**　采用了name mangling或者叫name decoration技术
-      1. C++编译器默认会对符号名(变量名、函数名等)进行改编、修饰，有些地方翻译为“命名倾轧”
-      2. 重载时会生成多个不同的函数名，不同编译器(MSVC、g++)有不同的生成规则
-      3. 通过IDA打开【VS_Release_禁止优化】可以看到
-      4. eg: 
+5. **本质**　采用了name mangling或者叫name decoration技术
+   1. C++编译器默认会对符号名(变量名、函数名等)进行改编、修饰，有些地方翻译为“命名倾轧”
+   2. 重载时会生成多个不同的函数名，不同编译器(MSVC、g++)有不同的生成规则
+   3. 通过IDA打开【VS_Release_禁止优化】可以看到
 
-2. **extern “C”**
+#### **extern “C”**
 
-   1. 被extern "C"修饰的代码会按照C语言的方式去编译
+1. 被extern "C"修饰的代码会按照C语言的方式去编译
 
-   2. 如果函数同时有声明和实现，要让函数声明被extern "C"修饰，函数实现可以不修饰
+2. 如果函数同时有声明和实现，要让函数声明被extern "C"修饰，函数实现可以不修饰
 
-   3.  由于C、C++编译规则的不同，在C、C++混合开发时，可能会经常出现以下操作,C++在调用C语言API时，需要使用extern "C"修饰C语言的函数声明. **在c++中声明函数，在c文件中写实现，会按c++ name mangling方式找函数实现，然后报错**。需要**extern "C"**
+3. 由于C、C++编译规则的不同，在C、C++混合开发时，可能会经常出现以下操作,C++在调用C语言API时，需要使用extern "C"修饰C语言的函数声明. **在c++中声明函数，在c文件中写实现，会按c++ name mangling方式找函数实现，然后报错**。需要**extern "C"**
 
-      ``` 
-      extern "C" {
-      	#include "sum.h"
-      }
-      ```
+   ``` c++
+   extern "C" {
+   	#include "sum.h"
+   }
+   ```
 
-      
+4. 有时也会在编写C语言代码中直接使用extern “C” ，这样就可以直接被C++调用,通过使用**__cplusplus**来区分C、C++环境
 
-   4. 有时也会在编写C语言代码中直接使用extern “C” ，这样就可以直接被C++调用,通过使用**__cplusplus**来区分C、C++环境
+#### **默认参数**
 
-3. **默认参数**
+C++允许函数设置默认参数，在调用时可以根据情况省略实参。规则如下:
+默认参数只能按照**右到左**的顺序.与**swift**不同，swift有标签，因为**二义性**
+如果函数同时有声明、实现，**默认参数只能放在函数声明**中，
+默认参数的值可以是常量、全局符号(全局变量、函数名），**参数如果是函数，使用的是指向函数的指针**  
 
-4.  C++允许函数设置默认参数，在调用时可以根据情况省略实参。规则如下:
-   默认参数只能按照**右到左**的顺序.与**swift**不同，swift有标签，因为**二义性**
-   如果函数同时有声明、实现，默认参数只能放在函数声明中，
-   默认参数的值可以是常量、全局符号(全局变量、函数名），**参数如果是函数，使用的是指向函数的指针**  
-
-### 内联函数
+#### 内联函数
 
 1. 使用**inline**修饰函数的声明或实现，可以使其变成内联函数
 2. 建议声明和实现都加上**inline**
@@ -73,7 +70,7 @@
    2. 内联函数多了函数特性和语法检测
    3. 传入a++调用不一样
 
-### 文件相关宏
+#### 文件相关宏
 
 1. 我们经常使用#ifndef、#define、#endif来防止头文件的内容被重复包含
 2. 使用#pragma once可以防止整个文件的内容被重复包含
@@ -81,7 +78,7 @@
 4. 有些编译器不支持#pragma once(较老编译器不支持，如GCC 3.4版本之前)，兼容性不够好
 5. 使用#ifndef、#define、#endif可以针对一个文件中的部分代码，而#pragma once只能针对整个文件
 
-### 引用 
+#### 引用
 
 1. 在C语言中，使用指针(Pointer)可以间接获取、修改某个变量的值
 
@@ -94,7 +91,7 @@
 
 3. 引用相当于是变量的别名(基本数据类型、枚举、结构体、类、指针、数组等，都可以有引用)
 
-    ```
+   ```
    //指针的引用 
    int a = 10;
    int b = 20;
@@ -118,7 +115,6 @@
    func() = 30
    
    引用交换a和b的值
-   
    ```
 
    对引用做计算，就是对引用所指向的变量做计算
@@ -199,7 +195,10 @@ int * const &rArray2 = array;
 <figure class="half">
     <img src="./1.png" /><img src="./2.png"/>
 </figure>
+#### 其他
 
+1. c++中有些表达式是可以被赋值的
+2. 一个变量的地址值，是它所有字节地址中的最小的那个地址值  							 						 					
 
 
 
@@ -215,9 +214,8 @@ int * const &rArray2 = array;
 
    实际开发中，用class表示类比较多
 
-3. 
 
-#### ◼ 变量名规范参考
+#### 变量名规范参考
 
 1. 全局变量:g_
 2. 成员变量:m_
@@ -238,8 +236,6 @@ int * const &rArray2 = array;
 通过对象首地址+加该成员变量的偏移来访问成员变量
 
   汇编中 `mov dword ptr  [eax + 4], 10`  偏移4  
-
-
 
 #### this
 
@@ -342,7 +338,7 @@ int * const &rArray2 = array;
 
    ![](./6.png)
 
-#### 声明和实现的分享
+#### 声明和实现的分离
 
 ```
 class Person {
@@ -621,7 +617,7 @@ ug.Student::m_age = 20;
 ug.Worker::m_age = 30;
 ```
 
-**菱形继承**
+#### **菱形继承**
 
  菱形继承带来的问题
 
@@ -632,7 +628,7 @@ ug.Worker::m_age = 30;
 
 
 
-**虚继承**也会生成虚表
+#### **虚继承**也会生成虚表
 
 虚继承虚基类的成员变量会放在最后面
 
@@ -1102,29 +1098,24 @@ void display(const T1 &v1,const T2 &v2) {
 display(20,1.7)
 ```
 
-
-
-
-
-​						 				
-
-
-
-
-
-
-
-
-
-
-
-
-
 #### 类模板
 
+```
+template <class Item>
+class Array {
+//友元 注意<>
+friend ostream&operator<<<>(ostream &,const Array<Item> &)
+    Item *m_data;
+}
+```
 
+#### 类型转换
 
-#### 类型转换 c++风格
+◼ C语言风格的类型转换符 
+(type)expression 
+type(expression) 
+
+◼ C++中有4个类型转换符
 
 1. Static_cast 
 
@@ -1170,16 +1161,13 @@ display(20,1.7)
       d的结果不是10， 
       
       int *p = reinterpret_cast<int *>(100);
-      int i = reinterpret_cast<int>(p);
+      int i = reinterpret_cast<int>(p)
       ```
 
-      
 
+#### C++新特性
 
-
-C++新特性
-
-#### c++11
+##### c++11
 
 1. atuo
 
@@ -1223,7 +1211,7 @@ C++新特性
 
    2. `[capture list](params list)mutable exceptionn-> return {function body}`
 
-      ```
+      ```c++
       int (*p)(int,int) = [](int a,int b) -> int {
           return a + b;
       };
@@ -1244,7 +1232,7 @@ C++新特性
       }
       ```
 
-C++14
+##### C++14
 
 1. 泛型lambda表达式
 
@@ -1255,21 +1243,35 @@ C++14
 
 3. 对捕获变量初始化
 
-   ```
+   ```c++
    int a;
    auto func = [a = 10]() {
        cout << a << endl;
    }
    func();
-   //这里仍然未初始化
+   //这里a仍然未初始化
    cout << a << endl;
    ```
 
-4. If else作用域
+##### c++ 17
 
+可以进行初始化的if，switch语句
 
-
-
+```c++
+if (int a = 10,a > 10) {
+	a = 1;
+} else if(int b = 20;a > 5 && b > 10) {
+    //...
+} //...
+switch (int a = 10; a) {
+case 1:
+	break;
+case 5:
+	break;
+default:
+	break;
+}
+```
 
 #### 错误
 
@@ -1280,9 +1282,161 @@ C++14
 
 #### 异常
 
-程序运行过程中发生的一种
+◼ 异常是一种在程序运行过程中的发生的不好预测的错误(比如内存不够)
+◼ 异常没有被处理，会导致程序终止
+◼ throw异常后，会在当前函数中查找匹配的catch，找不到就终止当前函数代码，去上一层函数中查找。如果最终都找不到匹配的catch，整个程序就会终止
 
-
+```
+try {
+    //被检测的代码
+} catch (异常类型　[变量名]) {
+    //异常处理代码
+} catch (异常类型　[变量名]) {
+    //异常处理代码
+} ...
+```
+
+◼ 为了增强可读性和方便团队协作，如果函数内部可能会抛出异常，建议函数声明一下异常类型
+```
+void func1() { //抛出任何可能的异常
+}
+void func2() throw {//不抛出任何可能的异常
+}
+void　func3() throw(int,double) {//只抛出int,double类型的异常
+}
+```
+
+**自定义异常类型**
+
+```
+class Exception {
+public:
+	virtual string what() const = 0;
+}
+class DivideException : Public Exception {
+public:
+	virtual string what() const {
+        return "不能除以0";
+	}
+}
+int divide(int v1,int v2) throw (Exception) {
+    if (v2 == 0) throw DivideException();
+    return v1/v2;
+}
+//使用
+try {
+    int a = 10;
+    int b = 0;
+    int c = divide(a,b);
+} catch (const Exception &exception) {
+	cout << exception.what() << endl;
+}
+```
+
+拦截所有类型的异常
+
+```
+try {
+        //被检测的代码
+} catch(...) {
+    //出现异常
+}
+```
+
+标准异常std
+
+#### 智能指针(Smart Pointer)
+
+◼ 传统指针存在的问题
+需要手动管理内存
+容易发生内存泄露(忘记释放、出现异常等)
+释放之后产生野指针
+
+◼ 智能指针就是为了解决传统指针存在的问题 
+auto_ptr:属于C++98标准，在C++11中已经不推荐使用(有缺陷，比如不能用于数组)
+shared_ptr:属于C++11标准  
+unique_ptr:属于C++11标准 
+
+简单实现　1.析构时delete 2.重载运算符
+
+```
+template <class T>
+class SmartPointer {
+    T *m_pointer;
+public:
+    SmartPointer(T *pointer):m_pointer(pointer) { }
+    ~SmartPointer() {
+		if (m_pointer == nil) return;
+		delete m_pointer;
+    }
+    T *operator()->{
+		return m_pointer;   
+    }
+}
+```
+
+**shared_ptr**
+
+◼ shared_ptr的设计理念
+多个shared_ptr可以指向同一个对象，当最后一个shared_ptr在作用域范围内结束时，对象才会被自动释放
+◼ 针对数组的用法
+
+```
+shared_ptr<Person> ptr1(new Person[5]{},[](Person *p) {delete[] p;});
+shared_ptr<Person[]> persons(new Person[5]{});
+```
+
+◼一个shared_ptr会对一个对象产生强引用(strong reference) 
+◼ 每个对象都有个与之对应的强引用计数，记录着当前对象被多少个shared_ptr强引用着  											可以通过shared_ptr的use_count函数获得强引用计数  
+◼ 当有一个新的shared_ptr指向对象时，对象的强引用计数就会+1  
+◼ 当有一个shared_ptr销毁时(比如作用域结束)，对象的强引用计数就会-1  
+◼ 当一个对象的强引用计数为0时(没有任何shared_ptr指向对象时)，对象就会自动销毁(析构)  							 						 					**注意点**
+◼ 不要使用裸指针来初始化智能指针，比如以下代码
+
+```
+Person *p = new Person();
+{
+    shared_ptr<Person> p1(p);
+}// ~Person()
+{
+    shared_ptr<Person> p2(p);
+}// ~Person()
+```
+
+◼可以通过一个已存在的智能指针初始化一个新的智能指针
+
+```
+shared_ptr<Person> p1(new Person());
+shared_ptr<Person> p2(p2);
+```
+
+**循环引用**类似oc 使用**weak_ptr**解决
+
+```
+class Car {
+public:
+	weak_ptr<Person> m_person;
+	//weak_ptr 相对于　shared_ptr
+}
+```
+
+**unique_ptr**
+
+◼ unique_ptr也会对一个对象产生强引用，它可以确保同一时间只有1个指针指向对象
+◼ 当unique_ptr销毁时(作用域结束时)，其指向的对象也就自动销毁了
+◼ 可以使用std::move函数转移unique_ptr的所有权
+
+```
+unique_ptr<Person> ptr1(new Person());
+unique_ptr<Person> ptr2 = std::move(ptr1);
+```
+
+
+
+
+
+
+
 
 ###栈桢
 
@@ -1292,16 +1446,4 @@ const可以调用static
 
 [感谢MJ编程内功必备之30小时快速精通C++和外挂实战](https://ke.qq.com/course/336509)
 
-
-
-
-
-
-
-
-
 oc 多态 与swift不同
-
-```
-
-```
