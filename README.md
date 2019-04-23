@@ -2,11 +2,10 @@
 
 成长日记
 
-[core-animation-note](./core-animation-note/note.md)
-
-[Functional-swift](./functional-swift-note/note.md)
-
-[swift进阶](./swiftAdvanced/note.md)
-
-[c++](./c++/note.md)
+1.　[core-animation-note](./core-animation-note/note.md)
+2.　[Functional-swift](./functional-swift-note/note.md)
+3.　[swift进阶](./swiftAdvanced/note.md)
+4.　[c++](./c++/note.md)
+5.　[algorithm](./algorithm/note.md)
+   [程序员中的数学](./algorithm/math.md)
 
