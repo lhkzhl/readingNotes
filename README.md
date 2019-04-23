@@ -2,13 +2,23 @@
 
 成长日记
 
-[core-animation-note](./core-animation-note/note.md)
+1. **iOS**
 
-[Functional-swift](./functional-swift-note/note.md)
+   [objective-c](./objective-c/note.md)
 
-[swift进阶](./swiftAdvanced/note.md)
+   [core-animation-note](./core-animation-note/README.md)
 
-[c++](./c++/note.md)
+   [Functional-swift](./functional-swift-note/README.md)
 
-[objective-c](./objective-c/note.md)
+   [swift进阶](./swiftAdvanced/README.md)
+
+2. [c++](./c++/README.md)
+
+3. [algorithm相关](./algorithm/README.md)
+
+   [程序员中的数学](./algorithm/math.md)
+   
+4. [网络协议](./网络协议/README.md)
+
+
 
