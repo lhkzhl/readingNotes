@@ -1,3 +1,5 @@
+
+
 ## 程序员的数学基础课
 
 ### 二进制计数法
@@ -42,6 +44,73 @@ public static int binaryToDecimal(String binarySource) {
    **c/c++中逻辑右移和算数右移共享同一个运算符 >>如果运算数类型是 unsigned，则采用逻辑右移；而是 signed，则采用算数右移。如果你针对 unsigned 类型的数据使用算数右移，或者针对 signed 类型的数据使用逻辑右移，那么你首先需要进行类型的转换。**
 
 2. 按位“或”`|`、“与” `&` 、“异或”`^`
+
+#### 位应用实例
+
+1. **验证奇偶数**
+
+   ```
+   x & 1 == 0 时为偶数 
+   ///由于1的二进制前n-1位都0，故结果是最后一位按最后与的结果，x的最后一位为1(奇数)才为真
+   ```
+
+2. **交换两个数字**(利用异或)
+
+   ```
+   利用异或，相同为0，不同为1
+   x = x ^ y
+   y = x ^ y  //代入第一步 y = x ^ y = x ^ y ^ y = x ^ (y ^ y) = x ^ 0  = x 
+   x = x ^ y	//代入第一步与第二步的结果 x = x^y^x =  y ^ 0 = y
+   ```
+
+   ```
+   x = x(原来)^y(原来) 
+   //推导y = x(原来) = x(原来)^0 = x(原来)^y(原来)^y(原来) = x^y(原来) //y需要== x时　 推导的结果为
+   y = x(新)^y(原来) //此时y已经等于原来的x
+   //推导x = y(原来) = y(原来)^0	= y(原来)^x(新)^x(新) = y(新)^x(新)					//x需要＝ y时　
+   x = x(新)^y(新)
+   ```
+
+3. **集合操作**　取交集、并集
+
+   如两个集合{1,3,8}和{4,8},先把两个集合转两个8位的二进制数,其中{1,3,8}代表第1、3、8位为1，即`10000101`　与`10001000`，按位与得`1000　0000`即交集{8}，按位或得`10001101`即并集{1,3,4,8}
+
+
+
+### 反码与补码
+
+**符号位：符号位是有符号二进制数中的最高位，需要用它来表示负数**
+如果有符号数，当符号位为0，表示正数，当符号位为1，表示负数
+如果无符号数，最高位不是符号位，只表示正数
+
+负数对计算机中的二进制减法至关重要。3－2可以看作是　3＋(－2)
+
+**溢出**,超出上限，叫上溢出，超出下限叫下溢出
+上溢出之后，又从下限开始，最大的数值加1，变成最小的数，周而复始，即余数和取模的概念
+
+![](https://static001.geekbang.org/resource/image/57/71/57e275c509cb477588b8c19b63df0b71.jpg)
+
+取模的除数：$2^{n-1}-1-(-2^{n-1}) +1 = （2^n -1） +1$(不直接写成2^n,2^n是n+1位，超出了n位能表示的范围，无符号能表示2^n-1)
+
+设i-j,(其中j为正数)，i-j加上取模的除数形成溢出刚好等于我们要得结果，其实由于溢出所以还是等于其本身
+i-j =(i-j)+(2^n-1)+1 = i+(2^n-1-j+1)  ,其中2^n-1-j即是负数j的反码,2^n-1-j **+1**即为**补码**
+
+![](https://static001.geekbang.org/resource/image/d3/4f/d3788c6ecac1f8d8eee9552c7452ca4f.jpg)
+
+例j=2, 2^n-1 - ,即为11…111  - 00…010 = 11..101,刚好是2的补码
+因此i-j =(i-j)+(2^n-1)+1 = i+(2^n-1-j+1) = **i**  +  **j的补码**
+
+
+
+
+
+**原码：**二进制的原始表示，如＋2的原码为`000..010` ,-2的原码为`100...010`
+
+**不能直接用负数的原码来进行计算**，应该怎么办？
+
+计算机可以通过补码正确的运算二进制减法
+
+
 
 ### 余数　
 
@@ -193,9 +262,183 @@ public static int getAllCompositionSolutions(int totoal, LinkedList<Integer>  li
 **归并排序(merge sort)**
 核心：**就是把两个有序的数列合并起来，形成一个更大的有序数列。**
 
+```
+    public static List<Comparable> mergeSort(List<Comparable> list) {
+        System.out.println(list);
+        if (list == null) {
+            return null;
+        }
+        if (list.size() <= 1) {
+            return list;
+        }
+
+        int left = 0;
+        int right = list.size();
+        int mid = left + ((right - left)>>1);
+        System.out.println("left:");
+        List<Comparable> leftList = mergeSort(list.subList(left, mid));
+        List<Comparable> rightList;
+        if (mid > right)  {
+            rightList  = new LinkedList<>();
+        } else {
+            System.out.println("right:");
+            rightList  = mergeSort(list.subList(mid, right));
+        }
+
+        int index = leftList.size() < rightList.size() ? leftList.size():rightList.size();
+        List<Comparable> result = new LinkedList<>();
+        int i = 0,j = 0;
+        while (i<leftList.size() && j<rightList.size()) {
+            if (leftList.get(i).compareTo(rightList.get(i)) < 0) {
+                result.add(leftList.get(i));
+                i ++;
+            } else {
+                result.add(rightList.get(j));
+                j++;
+            }
+        }
+        for (; i < leftList.size(); i++) {
+            result.add(leftList.get(i));
+        }
+        for (; j < rightList.size(); j++) {
+            result.add(rightList.get(j));
+        }
+        System.out.println("result:"+result);
+        return result;
+    }
+```
+
+步骤理解
+
+```
+[1, 5, 2, 3, 4, 8, 9, 6, 7, 29, 43, 23]
+left:          [1, 5, 2, 3, 4, 8]
+left:          [1, 5, 2]
+left:          [1]
+right:         [5, 2]
+left:          [5]
+right:         [2]
+result:[2, 5]
+result:[1, 2, 5]
+right:         [3, 4, 8]
+left:          [3]
+right:         [4, 8]
+left:          [4]
+right:         [8]
+result:[4, 8]
+result:[3, 4, 8]
+result:[1, 2, 5, 3, 4, 8]
+right:         [9, 6, 7, 29, 43, 23]
+left:          [9, 6, 7]
+left:          [9]
+right:         [6, 7]
+left:          [6]
+right:         [7]
+result:[6, 7]
+result:[6, 7, 9]
+right:         [29, 43, 23]
+left:          [29]
+right:         [43, 23]
+left:          [43]
+right:         [23]
+result:[23, 43]
+result:[23, 43, 29]
+result:[6, 7, 9, 23, 43, 29]
+result:[1, 2, 5, 3, 4, 8, 6, 7, 9, 23, 43, 29]
+[1, 2, 5, 3, 4, 8, 6, 7, 9, 23, 43, 29]
+```
+
+**分布式系统中的分治思想**
+
+数组很大(如1024GB)时如何处理？
+
+![](https://static001.geekbang.org/resource/image/78/31/78eefc6b61bad62f257f2b5e4972f031.jpg)
+
+上图1、2、3没有被安排排序工作，可以进一步优化性能
+![](https://static001.geekbang.org/resource/image/1d/58/1d278b81c4bd3b6bc522f34cbe298c58.jpg)
+
+转化为类似MapReduce的架构
+
+![](https://static001.geekbang.org/resource/image/08/5a/08155dd375f7b049424a6686bcb6475a.jpg)
 
 
 
+### 排列
+
+从 n 个不同的元素中取出 m（1≤m≤n）个不同的元素，按照一定的顺序排成一列，这个过程就叫**排列**（Permutation）。当 m=n 这种特殊情况出现的时候，比如说，在田忌赛马的故事中，田忌的三匹马必须全部出战，这就是**全排列**（All Permutation）。
+
+如果选择出的这 m 个元素可以有重复的，这样的排列就是为**重复排列**（Permutation with Repetition），否则就是**不重复排列**（Permutation without Repetition）。
+
+* 对于 n 个元素的全排列，所有可能的排列数量就是 nx(n-1)x(n-2)x…x2x1，也就是 n!；
+* 对于 n 个元素里取出 m(0<m≤n) 个元素的不重复排列数量是 nx(n-1)x(n-2)x…x(n - m + 1)，也就是 n!/(n-m)!。
+
+```
+   // O(n!) 全排列
+    public static void permutate(ArrayList<String> restArray, ArrayList<String> result) {
+        if ( restArray == null || restArray.size() == 0) {
+            System.out.println(result);
+            return;
+        }
+        for (int i = 0; i < restArray.size(); i++) {
+            ArrayList<String> newRestArray = (ArrayList<String>) restArray.clone();
+            String value = newRestArray.remove(i);
+            ArrayList<String> newResult = (ArrayList<String>) result.clone();
+            newResult.add(value);
+            permutate(newRestArray, newResult);
+        }
+    }
+    
+    ```
+[A, B, C]
+[A, C, B]
+[B, A, C]
+[B, C, A]
+[C, A, B]
+[C, B, A]
+​```
+```
+
+### 组合
+
+组合是指，从 n 个不同元素中取出 m（1≤m≤n）个不同的元素。
+对于所有 m 取值的组合之全集合，我们可以叫作**全组合**（All Combination）。例如对于集合{1, 2, 3}而言，全组合就是{空集, {1}, {2}, {3}, {1, 2}, {1,3} {2, 3}, {1, 2, 3}}。
+
+* n 个元素里取出 m 个的组合，可能性数量就是 n 个里取 m 个的排列数量，除以 m 个全排列的数量，也就是 (n! / (n-m)!) / m!。
+* 对于全组合而言，可能性为 2^n 种。例如，当 n=3 的时候，全组合包括了 8 种情况。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+总结
+
+如果一个问题可以被迭代法解决，而且是有关数值计算的，那你就看看是否可以假设命题，并优先考虑使用数学归纳法来证明； 如果需要借助计算机，那么优先考虑是否可以使用循环来实现。如果问题本身过于复杂，再考虑函数的嵌套调用，是否可以通过递归将问题逐级简化； 如果数据量过大，可以考虑采用分治思想的分布式系统来处理。
+
+
+
+**练习题**
+
+1. 在 1 到 n 的数字中，有且只有唯一的一个数字 m 重复出现了，其它的数字都只出现一次。请把这个数字找出来。提示：可以充分利用异或的两个特性。
+
+   ```
+   对于有的全部数字进行异或再和 1-n 这 n 个数字进行异或，最终得出的结果就是 m
+   ```
+
+   
 
 
 
@@ -205,3 +448,8 @@ public static int getAllCompositionSolutions(int totoal, LinkedList<Integer>  li
 
 
 
+[markdown公式语法](https://www.jianshu.com/p/e74eb43960a1)
+
+[markdown公式语法在线](http://latex.codecogs.com/eqneditor/editor.php)
+
+ios优化，重复网络取消　

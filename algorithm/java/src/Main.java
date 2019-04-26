@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 
 public class Main {
@@ -23,8 +24,38 @@ public class Main {
 
 //        testBiniarySearchString();
 
-        testGetAllCompositionSolutions();
+//        testGetAllCompositionSolutions();
+
+//        testMergeSort();
+
+
+        testPermutate();
+
+
     }
+
+
+
+    // O(n!)
+    public static void permutate(ArrayList<String> restArray, ArrayList<String> result) {
+        if ( restArray == null || restArray.size() == 0) {
+            System.out.println(result);
+            return;
+        }
+        for (int i = 0; i < restArray.size(); i++) {
+            ArrayList<String> newRestArray = (ArrayList<String>) restArray.clone();
+            String value = newRestArray.remove(i);
+            ArrayList<String> newResult = (ArrayList<String>) result.clone();
+            newResult.add(value);
+            permutate(newRestArray, newResult);
+        }
+    }
+
+    public static void testPermutate() {
+        ArrayList<String>  list = new ArrayList<String>(){{add("A");add("B");add("C");}};
+        permutate(list, new ArrayList<>());
+    }
+
 
     /**
 
@@ -141,5 +172,54 @@ public class Main {
         System.out.println("总个数："+totalCount);
     }
 
+    public static List<Comparable> mergeSort(List<Comparable> list) {
+        System.out.println(list);
+        if (list == null) {
+            return null;
+        }
+        if (list.size() <= 1) {
+            return list;
+        }
 
+        int left = 0;
+        int right = list.size();
+        int mid = left + ((right - left)>>1);
+        System.out.print("left:          ");
+        List<Comparable> leftList = mergeSort(list.subList(left, mid));
+        List<Comparable> rightList;
+        if (mid > right)  {
+            rightList  = new LinkedList<>();
+        } else {
+            System.out.print("right:         ");
+            rightList  = mergeSort(list.subList(mid, right));
+        }
+
+        int index = leftList.size() < rightList.size() ? leftList.size():rightList.size();
+        List<Comparable> result = new LinkedList<>();
+        int i = 0,j = 0;
+        while (i<leftList.size() && j<rightList.size()) {
+            if (leftList.get(i).compareTo(rightList.get(i)) < 0) {
+                result.add(leftList.get(i));
+                i ++;
+            } else {
+                result.add(rightList.get(j));
+                j++;
+            }
+        }
+        for (; i < leftList.size(); i++) {
+            result.add(leftList.get(i));
+        }
+        for (; j < rightList.size(); j++) {
+            result.add(rightList.get(j));
+        }
+        System.out.println("result:"+result);
+        return result;
+    }
+
+    public static void testMergeSort() {
+//        int[] a = {};
+
+        List<Comparable> list = Arrays.asList(1,5,2,3,4,8,9,6,7,29,43,23);
+        System.out.println(mergeSort(list));
+    }
 }
