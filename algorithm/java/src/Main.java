@@ -1,3 +1,5 @@
+import sun.swing.BakedArrayList;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
@@ -29,12 +31,112 @@ public class Main {
 //        testMergeSort();
 
 
-        testPermutate();
+//        testPermutate();
+
+//        testcombine();
 
 
+//        testGetStrDistance();
+        testGetMinimalCombinationOf();
     }
 
 
+    public static void testGetMinimalCombinationOf(){
+        getMinimalCombinationOf(100);
+    }
+    public static int getMinimalCombinationOf(int money){
+        int[] list = new int[]{2,3,7};
+        int[] d = new int[money+1];
+        d[1] = Integer.MAX_VALUE-1;
+        d[2] = 1;
+        d[3] = 1;
+//        d[7] = 1;
+
+        for (int i = 4; i <= money; i++) {
+            if (i==7) {
+                d[i] = 1;
+                continue;
+            }
+            int first = d[i-2] + 1;
+            int second = d[i-3] + 1;
+            int min = Math.min(first, second);
+
+            if (i>7){
+                int third = d[i-7] + 1;
+                min = Math.min(min, third);
+            }
+            d[i] = min;
+        }
+        for (int i = 0; i < d.length; i++) {
+            System.out.println(i + "--"+d[i]);
+        }
+        return d[money];
+    }
+
+
+    public static void testGetStrDistance()  {
+        System.out.println(getStrDistance("mouse", "mouuse"));
+    }
+
+    //O(m*n)
+    public static int getStrDistance(String a,String b ) {
+        if (a == null || b == null) return -1;
+
+        int[][] d = new int[a.length()+1][b.length()+1];
+        for (int i = 0; i <= a.length(); i++) {
+            d[i][0] = i;
+        }
+        for (int j = 0; j < b.length(); j++) {
+            d[0][j] = j;
+        }
+
+        for (int i = 0; i < a.length(); i++) {
+            for (int j = 0; j < b.length(); j++) {
+                //编辑距离
+                int r = 0;
+                if (a.charAt(i) != b.charAt(j)) {
+                    r = 1;
+                }
+                int first_append = d[i][j+1] + 1;
+                int second_append = d[i+1][j] + 1;
+
+                int min = Math.min(first_append, second_append);
+                min = Math.min(min, r + d[i][j]);
+                d[i+1][j+1] = min;
+            }
+        }
+
+        for (int i = 0; i < a.length(); i++) {
+            for (int j = 0; j < b.length(); j++) {
+                System.out.print(d[i][j] + " ");
+            }
+            System.out.println();
+        }
+
+        return d[a.length()][b.length()];
+    }
+
+
+    public static void testcombine() {
+        ArrayList<String>  list = new ArrayList<String>(){{add("A");add("B");add("C");add("D");}};
+        combine(list, new ArrayList<>(),2);
+    }
+
+
+    public static void combine(ArrayList<String> restArray, ArrayList<String> result,int m) {
+        if ( result.size() == m) {
+            System.out.println(result);
+            return;
+        }
+        for (int i = 0; i < restArray.size(); i++) {
+
+            ArrayList<String> newResult = (ArrayList<String>) result.clone();
+            newResult.add(restArray.get(i));
+            //组合时前面选过的不会再选了，　选完前面的之后直接从后面开始选
+            ArrayList<String> newRestArray = new BakedArrayList(restArray.subList(i+1, restArray.size()));
+            combine(newRestArray, newResult, m);
+        }
+    }
 
     // O(n!)
     public static void permutate(ArrayList<String> restArray, ArrayList<String> result) {
