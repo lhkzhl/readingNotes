@@ -67,6 +67,7 @@ UIView的frame、bounds、center仅仅只是存取方法，实际是改变CALaye
   * 默认位于图层的中点　即{0.5,0.5}
   * anchorPoint改变，会改变frame的x,y，使用position相对anchorPoint的值不变，可以先算view.center，然后把center移到锚点位置![](https://github.com/AttackOnDobby/iOS-Core-Animation-Advanced-Techniques/raw/master/3-%E5%9B%BE%E5%B1%82%E5%87%A0%E4%BD%95%E5%AD%A6/3.3.jpeg)
   * 应用比如说**时钟动画**
+  
 2. 坐标系转换
 
   ```
@@ -75,13 +76,38 @@ UIView的frame、bounds、center仅仅只是存取方法，实际是改变CALaye
   - (CGRect)convertRect:(CGRect)rect fromLayer:(CALayer *)layer;
   - (CGRect)convertRect:(CGRect)rect toLayer:(CALayer *)layer;
   ```
+  
+  convertPoint直接示例，把A上的点转换到B上：
+  
+  ```
+  [A convertPoint:point toView:B]；
+  
+  [B convertPoint:point fromView:A];
+  
+  注意：point坐标的参考系是A视图，A和B的视图层次不需要关系。
+  ```
+  
+  convertRect直接示例，把A的frame转换到B上：
+  
+  ```
+  [A convertRect:A.bounds toView:B];
+  //        这里使用A.frame 则转换之后的rect会比用bounds多个x,和y的值
+  
+  [B convertRect:A.bounds fromView:A];
+  
+  注意：****rect需要相对于A（同上一样，bounds就是A相对于自身的frame），A和B的视图层次不需要关系。
+  ```
+  
 3. CALayer.geometryFlipped 
 
   * if true  子视图垂直翻转
+  
 4. CALayer中Z坐标轴 （三维空间）
   * zPosition　改变图层的显示顺序了，越大就越显示在上，但不处理响应事件,
   * anchorPointZ　锚点z轴，
+  
 5. CALayer -hitTest:方法接受一个CGPoint类型参数，而不是BOOL类型，它返回图层本身，或者包含这个坐标点的叶子节点图层
+
 6. 自动布局
   * UIView通过指定组合形成线性方程组和不等式的约束，定义视图的位置和大小。
   * autoresizingMask　横竖屏用的较多
