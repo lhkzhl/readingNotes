@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>HLImagePositionButton.ipa</key>
+	<array>
+		<dict>
+			<key>architectures</key>
+			<array>
+				<string>armv7</string>
+				<string>arm64</string>
+			</array>
+			<key>certificate</key>
+			<dict>
+				<key>SHA1</key>
+				<string>A361F06D0807B199EC6A227723777FF5B610943A</string>
+				<key>dateExpires</key>
+				<string>2020/4/17</string>
+				<key>type</key>
+				<string>iOS Distribution</string>
+			</dict>
+			<key>embeddedBinaries</key>
+			<array>
+				<dict>
+					<key>architectures</key>
+					<array>
+						<string>armv7</string>
+						<string>arm64</string>
+					</array>
+					<key>certificate</key>
+					<dict>
+						<key>SHA1</key>
+						<string>A361F06D0807B199EC6A227723777FF5B610943A</string>
+						<key>dateExpires</key>
+						<string>2020/4/17</string>
+						<key>type</key>
+						<string>iOS Distribution</string>
+					</dict>
+					<key>name</key>
+					<string>SnapKit.framework</string>
+					<key>team</key>
+					<dict>
+						<key>id</key>
+						<string>3EQU965GX4</string>
+						<key>name</key>
+						<string>BeiJing Sinology Interconnected Technology Co. Ltd</string>
+					</dict>
+				</dict>
+			</array>
+			<key>entitlements</key>
+			<dict>
+				<key>application-identifier</key>
+				<string>3EQU965GX4.com.xueguoxue.xgxw</string>
+				<key>com.apple.developer.team-identifier</key>
+				<string>3EQU965GX4</string>
+				<key>get-task-allow</key>
+				<false/>
+				<key>keychain-access-groups</key>
+				<array>
+					<string>3EQU965GX4.com.xueguoxue.xgxw</string>
+				</array>
+			</dict>
+			<key>name</key>
+			<string>HLImagePositionButton.app</string>
+			<key>profile</key>
+			<dict>
+				<key>UUID</key>
+				<string>75dd52af-60c7-473e-89b8-2a93e6e76967</string>
+				<key>name</key>
+				<string>xgxw_hoc</string>
+			</dict>
+			<key>team</key>
+			<dict>
+				<key>id</key>
+				<string>3EQU965GX4</string>
+				<key>name</key>
+				<string>BeiJing Sinology Interconnected Technology Co. Ltd</string>
+			</dict>
+		</dict>
+	</array>
+</dict>
+</plist>
